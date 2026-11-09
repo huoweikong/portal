@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WangLab Portal · 资源黄页</title>
+<style>
+:root{
+  --bg:#eef1f4; --bg2:#ffffff; --card:#ffffff; --line:#e2e7ec; --line2:#eef1f4;
+  --tx:#182430; --tx2:#5b6b7d; --tx3:#93a1b0;
+  --accent:#00a9c4; --accent2:#00c1de; --dark:#161d26; --dark2:#1e2833;
+  --shadow:0 1px 2px rgba(22,29,38,.05), 0 8px 24px -12px rgba(22,29,38,.18);
+  --shadow-lg:0 12px 40px -12px rgba(22,29,38,.28);
+  --r:10px;
+}
+html[data-theme="dark"]{
+  --bg:#0e1319; --bg2:#151c24; --card:#18212b; --line:#243040; --line2:#1c252f;
+  --tx:#e6edf3; --tx2:#9fb0c2; --tx3:#6b7d90;
+  --accent:#22d3ee; --accent2:#67e8f9; --dark:#0b1016; --dark2:#111823;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+  --shadow-lg:0 16px 48px -12px rgba(0,0,0,.75);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font:14px/1.55 "Microsoft YaHei","PingFang SC","Hiragino Sans GB",-apple-system,Arial,sans-serif;
+  background:var(--bg); color:var(--tx); -webkit-font-smoothing:antialiased;
+}
+a{text-decoration:none;color:inherit}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+input,select{font:inherit}
+
+/* ---------- header ---------- */
+.hd{position:sticky;top:0;z-index:60;background:var(--dark);box-shadow:0 2px 12px rgba(0,0,0,.18)}
+.hd::before{content:"";display:block;height:3px;background:linear-gradient(to left,#4cd964,#5ac8fa,#007aff,#34aadc,#5856d6,#ff2d55)}
+.hd-in{max-width:1560px;margin:0 auto;padding:10px 20px;display:flex;align-items:center;gap:18px}
+.brand{display:flex;align-items:center;gap:10px;color:#fff;font-size:17px;font-weight:700;letter-spacing:.3px;white-space:nowrap}
+.brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent2);box-shadow:0 0 0 4px rgba(0,193,222,.18)}
+.brand em{font-style:normal;font-weight:400;font-size:12px;color:#8fa3b5;padding-left:2px}
+.search{flex:1;max-width:560px;position:relative;display:flex;align-items:center}
+.search svg{position:absolute;left:12px;width:15px;height:15px;stroke:#7d8f9f;fill:none;stroke-width:2}
+.search input{width:100%;height:38px;border-radius:19px;border:1px solid #2b3745;background:#0f151c;color:#e8eef4;padding:0 74px 0 34px;outline:none;transition:.18s}
+.search input::placeholder{color:#6b7d8f}
+.search input:focus{border-color:var(--accent);background:#0b1117;box-shadow:0 0 0 3px rgba(0,169,196,.16)}
+.search kbd{position:absolute;right:44px;font:11px/1 monospace;color:#7d8f9f;border:1px solid #2b3745;border-radius:4px;padding:3px 5px}
+.search .clr{position:absolute;right:8px;width:26px;height:26px;border-radius:50%;color:#8fa3b5;font-size:16px;line-height:1;display:none}
+.search.hasval .clr{display:block}
+.search.hasval kbd{display:none}
+.search .clr:hover{background:#1b2430;color:#fff}
+.hd-act{display:flex;align-items:center;gap:6px;margin-left:auto}
+.hbtn{height:34px;padding:0 12px;border-radius:8px;color:#c3d0dc;font-size:13px;display:flex;align-items:center;gap:6px;transition:.16s;white-space:nowrap}
+.hbtn:hover{background:#1f2937;color:#fff}
+.hbtn.on{background:var(--accent);color:#04141a;font-weight:600}
+.hbtn .c{font-size:11px;opacity:.75}
+
+/* ---------- layout ---------- */
+.wrap{max-width:1560px;margin:0 auto;padding:18px 20px 90px;display:grid;grid-template-columns:236px minmax(0,1fr);gap:22px}
+.side{align-self:start;position:sticky;top:72px;max-height:calc(100vh - 90px);overflow:auto;padding-right:4px}
+.side::-webkit-scrollbar{width:6px}
+.side::-webkit-scrollbar-thumb{background:#cfd8e1;border-radius:3px}
+html[data-theme="dark"] .side::-webkit-scrollbar-thumb{background:#2c3a49}
+.side h4{font-size:11px;letter-spacing:1.4px;color:var(--tx3);font-weight:600;margin:4px 0 8px 8px}
+#nav{display:flex;flex-direction:column;gap:1px;margin-bottom:16px}
+#nav a{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:8px;color:var(--tx2);font-size:13.5px;transition:.14s}
+#nav a:hover{background:var(--bg2);color:var(--tx);box-shadow:var(--shadow)}
+#nav a.on{background:var(--bg2);color:var(--tx);font-weight:600;box-shadow:var(--shadow)}
+#nav a.on .k{background:var(--accent);color:#fff}
+#nav .k{width:20px;height:20px;border-radius:6px;background:var(--line2);color:var(--tx3);display:grid;place-items:center;font-size:11px;font-weight:700;flex:none}
+#nav .g{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#nav .n{font-size:11px;color:var(--tx3);font-variant-numeric:tabular-nums}
+
+.tagbox{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
+.tag{font-size:11.5px;padding:3px 9px;border-radius:20px;border:1px solid var(--line);color:var(--tx2);background:var(--bg2);transition:.14s;cursor:pointer}
+.tag:hover{border-color:var(--accent);color:var(--accent)}
+.tag.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.tag .n{opacity:.55;font-size:10px;margin-left:3px}
+
+.side-foot{border-top:1px dashed var(--line);padding-top:12px;font-size:11.5px;color:var(--tx3);line-height:1.9}
+.side-foot b{color:var(--tx2);font-variant-numeric:tabular-nums}
+.side-foot button{margin-top:8px;font-size:11.5px;color:var(--accent);text-decoration:underline}
+
+/* ---------- main ---------- */
+main{min-width:0}
+.recbar{display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.recbar:empty{display:none}
+.recbar .lb{font-size:11.5px;color:var(--tx3);letter-spacing:.5px}
+.recbar a{font-size:12px;padding:4px 10px;border-radius:20px;background:var(--bg2);border:1px solid var(--line);color:var(--tx2);transition:.14s;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.recbar a:hover{border-color:var(--accent);color:var(--accent);box-shadow:var(--shadow)}
+
+section.sec{margin-bottom:26px;scroll-margin-top:78px}
+.sechd{display:flex;align-items:center;gap:10px;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+.sechd .bar{width:4px;height:16px;border-radius:2px;background:var(--accent)}
+.sechd h3{font-size:15px;font-weight:700;letter-spacing:.3px}
+.sechd .cnt{font-size:11px;color:var(--tx3);background:var(--line2);border-radius:20px;padding:1px 8px;font-variant-numeric:tabular-nums}
+.sechd .acts2{margin-left:auto;display:flex;gap:4px;opacity:0;transition:.16s}
+section.sec:hover .acts2{opacity:1}
+.mini{font-size:11.5px;color:var(--tx3);padding:3px 8px;border-radius:6px}
+.mini:hover{background:var(--bg2);color:var(--accent);box-shadow:var(--shadow)}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(212px,1fr));gap:9px}
+.card{position:relative;background:var(--card);border:1px solid var(--line);border-radius:var(--r);transition:.16s;overflow:hidden}
+.card:hover{border-color:#c9d6e2;box-shadow:var(--shadow-lg);transform:translateY(-2px)}
+html[data-theme="dark"] .card:hover{border-color:#33465c}
+.cardlink{display:flex;align-items:flex-start;gap:9px;padding:10px 11px;min-height:60px}
+.ico{width:28px;height:28px;border-radius:8px;flex:none;display:grid;place-items:center;font-size:12.5px;font-weight:700;color:#fff;background:hsl(var(--h) 62% 52%)}
+html[data-theme="dark"] .ico{background:hsl(var(--h) 45% 42%)}
+.ct{min-width:0;flex:1}
+.cn{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;font-size:13px;font-weight:600;line-height:1.35;color:var(--tx);overflow:hidden;word-break:break-word}
+.cu{display:block;font-size:10.5px;color:var(--tx3);margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:Consolas,Menlo,monospace}
+.ctags{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px}
+.ctags i{font-style:normal;font-size:10px;padding:0 5px;border-radius:4px;background:var(--line2);color:var(--tx3);line-height:15px}
+.card .badge{position:absolute;top:0;right:0;font-size:9.5px;padding:1px 5px;border-bottom-left-radius:6px;background:rgba(0,169,196,.12);color:var(--accent)}
+.acts{position:absolute;right:6px;bottom:6px;display:flex;gap:2px;opacity:0;transform:translateY(3px);transition:.15s;background:linear-gradient(90deg,transparent,var(--card) 22%)}
+.card:hover .acts{opacity:1;transform:none}
+.acts button{width:24px;height:24px;border-radius:6px;display:grid;place-items:center;color:var(--tx3);font-size:12px}
+.acts button:hover{background:var(--line2);color:var(--accent)}
+.acts button.faved{color:#f5a623}
+body.editing .acts{opacity:1;transform:none}
+
+.empty{text-align:center;color:var(--tx3);padding:70px 0;font-size:13px}
+.empty b{display:block;font-size:34px;margin-bottom:10px;opacity:.35}
+
+/* ---------- dock ---------- */
+.dock{position:fixed;right:22px;bottom:22px;z-index:70;display:flex;flex-direction:column;align-items:flex-end;gap:10px}
+.fab{width:50px;height:50px;border-radius:50%;background:var(--dark);color:#fff;display:grid;place-items:center;box-shadow:var(--shadow-lg);position:relative;transition:.18s;font-size:19px}
+.fab:hover{transform:translateY(-2px);background:var(--accent);color:#04141a}
+.fab .fb{position:absolute;top:-3px;right:-3px;min-width:19px;height:19px;border-radius:10px;background:#ff5b5b;color:#fff;font-size:10.5px;display:grid;place-items:center;padding:0 4px;font-weight:700}
+.panel{width:308px;max-height:min(66vh,540px);overflow:auto;background:var(--bg2);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow-lg);padding:12px;display:none}
+.panel.open{display:block;animation:pop .16s ease-out}
+@keyframes pop{from{opacity:0;transform:translateY(6px) scale(.99)}}
+.panel h5{font-size:12px;color:var(--tx3);letter-spacing:1px;margin:2px 2px 8px;display:flex;align-items:center}
+.panel h5 button{margin-left:auto;color:var(--accent);font-size:11px;text-decoration:underline}
+.pit{display:flex;align-items:center;gap:8px;padding:5px 6px;border-radius:8px;font-size:12.5px}
+.pit:hover{background:var(--line2)}
+.pit .pn{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--tx2)}
+.pit button{font-size:11px;color:var(--accent);padding:2px 6px;border-radius:5px}
+.pit button:hover{background:rgba(0,169,196,.12)}
+.pemp{font-size:12px;color:var(--tx3);text-align:center;padding:18px 0;line-height:1.9}
+
+/* ---------- modal ---------- */
+.mask{position:fixed;inset:0;background:rgba(12,18,24,.5);z-index:90;display:none;align-items:center;justify-content:center;padding:20px}
+.mask.open{display:flex}
+.modal{width:100%;max-width:460px;background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:20px;box-shadow:var(--shadow-lg)}
+.modal h3{font-size:15px;margin-bottom:14px}
+.fld{margin-bottom:10px}
+.fld label{display:block;font-size:11.5px;color:var(--tx3);margin-bottom:4px}
+.fld input,.fld select{width:100%;height:36px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--tx);padding:0 10px;outline:none}
+.fld input:focus,.fld select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,169,196,.14)}
+.modal .row{display:flex;gap:8px;justify-content:flex-end;margin-top:16px;flex-wrap:wrap}
+.bt{height:34px;padding:0 14px;border-radius:8px;font-size:13px}
+.bt.p{background:var(--accent);color:#fff;font-weight:600}
+.bt.g{color:var(--tx2)}
+.bt.g:hover{background:var(--line2)}
+.kbdhelp{font-size:12.5px;color:var(--tx2);line-height:2.05}
+.kbdhelp kbd{font:11px/1 monospace;border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:2px 5px;background:var(--bg)}
+
+@media(max-width:1080px){
+  .wrap{grid-template-columns:minmax(0,1fr);padding:14px}
+  .side,.side-foot{min-width:0}
+  .side{position:static;max-height:none;overflow:visible}
+  .side h4{margin-left:0}
+  #nav{flex-direction:row;overflow-x:auto;padding-bottom:4px;max-width:100%}
+  #nav a{white-space:nowrap;border:1px solid var(--line);background:var(--bg2)}
+  #nav .n{display:none}
+  .hd-in{flex-wrap:wrap;gap:10px}
+  .brand em{display:none}
+  .search{order:3;max-width:none;flex-basis:100%}
+  .hd-act{margin-left:auto}
+  .grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+  .acts{opacity:1;transform:none}
+}
+@media(max-width:560px){
+  .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .brand{font-size:15px}
+  .hbtn{padding:0 8px;font-size:12px}
+  .cn{font-size:12.5px}
+  section.sec{margin-bottom:20px}
+}
+</style>
+</head>
+<body>
+
+<header class="hd">
+  <div class="hd-in">
+    <a class="brand" href="#" id="brand"><span class="dot"></span>WangLab Portal<em>个人资源黄页</em></a>
+    <div class="search" id="sbox">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+      <input id="q" type="text" placeholder="搜索站点、标签、域名…" autocomplete="off" spellcheck="false">
+      <kbd>/</kbd>
+      <button class="clr" id="clr" title="清空">×</button>
+    </div>
+    <div class="hd-act">
+      <button class="hbtn" id="btnFav">★ 只看收藏<span class="c" id="favN"></span></button>
+      <button class="hbtn" id="btnAdd">＋ 添加</button>
+      <button class="hbtn" id="btnEdit">⊙ 管理</button>
+      <button class="hbtn" id="btnTheme" title="切换主题">☾</button>
+      <button class="hbtn" id="btnHelp" title="帮助">?</button>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <aside class="side">
+    <h4>分类导航</h4>
+    <nav id="nav"></nav>
+    <h4>标签筛选</h4>
+    <div class="tagbox" id="tagbox"></div>
+    <div class="side-foot" id="foot"></div>
+  </aside>
+  <main>
+    <div class="recbar" id="favbar"></div>
+    <div class="recbar" id="recbar"></div>
+    <div id="sections"></div>
+  </main>
+</div>
+
+<div class="dock">
+  <div class="panel" id="panel">
+    <h5>已隐藏站点<button id="restoreAll">全部恢复</button></h5>
+    <div id="pList"></div>
+  </div>
+  <button class="fab" id="btnDock" title="隐藏夹">☰<span class="fb" id="hideN">0</span></button>
+</div>
+
+<div class="mask" id="mask">
+  <div class="modal" id="modal"></div>
+</div>
+
+<script>
+const CATS = [{"k":"office","n":"办公 · 内网","i":"O","d":"实验室日常办公、内部服务器与协同文档"},{"k":"journal","n":"文献 · 期刊","i":"J","d":"投稿看刊、检索下载、文献管理"},{"k":"bio","n":"实验 · 试剂","i":"B","d":"试剂耗材采购、实验方法与器材"},{"k":"data","n":"生信 · 数据","i":"D","d":"公共数据库、组学资源、论坛"},{"k":"tool","n":"在线工具","i":"T","d":"计算器、引物/CRISPR 设计、绘图与转换"},{"k":"ai","n":"AI · 大模型","i":"A","d":"对话模型、论文助手、AI 工具集"},{"k":"embed","n":"嵌入式 · 编程","i":"E","d":"芯片厂商、开发板资料、电路与固件"},{"k":"learn","n":"课程 · 学习","i":"L","d":"视频课程、生信教程、打字与语言"},{"k":"soft","n":"软件 · 下载","i":"S","d":"本机常用软件与工具下载"},{"k":"job","n":"求职 · 招聘","i":"G","d":"事业单位与高校招聘入口"},{"k":"misc","n":"生活 · 杂项","i":"M","d":"地图、古籍、音乐、代理与杂七杂八"}];
+const ITEMS = [{"n":"WangLab 实验材料库","u":"https://www.kdocs.cn/l/cvIpOcagXpcf","c":"office","t":["常用","需登录"],"d":""},{"n":"WangLab 申购和报销清单","u":"https://www.kdocs.cn/l/ciPp4aHy1He0","c":"office","t":["常用","需登录"],"d":""},{"n":"Wlab 资源信息表","u":"https://kdocs.cn/l/co0520HLTe4B","c":"office","t":["需登录"],"d":""},{"n":"AOP 系统（WebVPN）","u":"https://webvpn.gzlab.ac.cn:20443/","c":"office","t":["常用","需登录","内网"],"d":""},{"n":"C6_P2 安全柜预约","u":"https://docs.qq.com/sheet/DYkZnR3R3bmxJcXhJ?tab=BB08J2","c":"office","t":["需登录"],"d":""},{"n":"MatterMost 办公系统","u":"http://172.18.150.44:8080/","c":"office","t":["常用","内网"],"d":""},{"n":"Protocol 等共享文档","u":"https://share.weiyun.com/RvV6sP3m-g","c":"office","t":["文档"],"d":""},{"n":"CellRoom 电脑","u":"http://172.18.150.185:8000/","c":"office","t":["内网"],"d":""},{"n":"WB 电脑 / 资源页","u":"http://172.18.150.44:9999/","c":"office","t":["内网"],"d":""},{"n":"DNAGel 电脑","u":"http://172.18.150.13:8000/","c":"office","t":["内网"],"d":""},{"n":"局域网文件服务器","u":"http://172.18.149.4:8080/files/","c":"office","t":["内网"],"d":""},{"n":"公网地址（WangLab-Resource）","u":"https://huoweikong.github.io/","c":"office","t":["内网"],"d":""},{"n":"广实共享平台（大型仪器）","u":"http://192.168.1.194:8080/grmh-eqmgr/login","c":"office","t":["内网"],"d":""},{"n":"广实共享平台（备线 172.18.6.175）","u":"http://172.18.6.175/grmh-eqmgr/","c":"office","t":["内网"],"d":""},{"n":"广实科研平台","u":"http://172.18.6.176:9001/#/index","c":"office","t":["内网"],"d":""},{"n":"Rstudio Server（150.46）","u":"http://172.18.150.46:8787/","c":"office","t":["内网","计算"],"d":""},{"n":"Rstudio Server（150.3）","u":"http://172.18.150.3:8787/","c":"office","t":["内网","计算"],"d":""},{"n":"AI 大模型（内网）","u":"http://172.18.150.3:8080/","c":"office","t":["内网","AI"],"d":""},{"n":"诺禾 CSS 系统","u":"https://ocsslocal.novogene.com/pub/home","c":"office","t":["需登录"],"d":""},{"n":"腾讯企业邮箱","u":"https://exmail.qq.com/login","c":"office","t":["常用","需登录"],"d":""},{"n":"QQ 邮箱","u":"https://wx.mail.qq.com/","c":"office","t":["需登录"],"d":""},{"n":"163 邮箱","u":"https://mail.163.com/","c":"office","t":["需登录"],"d":""},{"n":"语雀（知识库）","u":"https://www.yuque.com/dashboard","c":"office","t":["文档","需登录"],"d":""},{"n":"咸鱼管家","u":"https://www.goofish.pro/sale/product/drafts","c":"office","t":["需登录"],"d":""},{"n":"谷歌 Google","u":"https://www.google.com.hk/","c":"journal","t":["常用","需代理"],"d":""},{"n":"必应 Bing","u":"https://cn.bing.com/","c":"journal","t":["常用"],"d":""},{"n":"Google Scholar","u":"https://scholar.google.com/","c":"journal","t":["常用","需代理"],"d":""},{"n":"PubMed","u":"https://pubmed.ncbi.nlm.nih.gov/","c":"journal","t":["常用","期刊"],"d":""},{"n":"GeenMedical 根哥学术","u":"https://www.geenmedical.com/","c":"journal","t":["中文","期刊"],"d":""},{"n":"Science","u":"https://www.science.org/journal/science/research","c":"journal","t":["期刊"],"d":""},{"n":"Science Immunology","u":"https://www.science.org/toc/sciimmunol/current","c":"journal","t":["期刊"],"d":""},{"n":"Science Translational Medicine","u":"https://www.science.org/toc/stm/current","c":"journal","t":["期刊"],"d":""},{"n":"Nature","u":"https://www.nature.com/nature/research-articles/","c":"journal","t":["期刊"],"d":""},{"n":"Nature Biotechnology","u":"https://www.nature.com/nbt/research-articles","c":"journal","t":["期刊"],"d":""},{"n":"Nature Microbiology","u":"https://www.nature.com/nmicrobiol/research-articles","c":"journal","t":["期刊"],"d":""},{"n":"Nature Cell Biology","u":"https://www.nature.com/ncb/research-articles","c":"journal","t":["期刊"],"d":""},{"n":"Nature Immunology","u":"https://www.nature.com/ni/research-articles","c":"journal","t":["期刊"],"d":""},{"n":"Nature Reviews Immunology","u":"https://www.nature.com/nri/reviews-and-analysis","c":"journal","t":["期刊"],"d":""},{"n":"Nature Reviews Molecular Cell Biology","u":"https://www.nature.com/nrm/reviews-and-analysis","c":"journal","t":["期刊"],"d":""},{"n":"Cell","u":"https://www.cell.com/cell/newarticles","c":"journal","t":["期刊"],"d":""},{"n":"Immunity","u":"https://www.cell.com/immuni/newarticles","c":"journal","t":["期刊"],"d":""},{"n":"Cell Metabolism","u":"https://www.cell.com/cmet/newarticles","c":"journal","t":["期刊"],"d":""},{"n":"Cell Host & Microbe","u":"https://www.cell.com/chom/newarticles","c":"journal","t":["期刊"],"d":""},{"n":"Molecular Cell","u":"https://www.cell.com/molcel/newarticles","c":"journal","t":["期刊"],"d":""},{"n":"Cell Reports","u":"https://www.cell.com/cell-reports/current#Articles","c":"journal","t":["期刊"],"d":""},{"n":"EMBO Journal","u":"https://www.embopress.org/journal/14602075","c":"journal","t":["期刊"],"d":""},{"n":"EMBO Reports","u":"https://www.embopress.org/journal/14693178","c":"journal","t":["期刊"],"d":""},{"n":"ACS Publications","u":"https://pubs.acs.org/","c":"journal","t":["期刊"],"d":""},{"n":"mBio","u":"https://journals.asm.org/toc/mbio/current","c":"journal","t":["期刊"],"d":""},{"n":"JVI（Journal of Virology）","u":"https://journals.asm.org/toc/jvi/current","c":"journal","t":["期刊"],"d":""},{"n":"PLOS Pathogens","u":"https://journals.plos.org/plospathogens/issue","c":"journal","t":["期刊"],"d":""},{"n":"bioRxiv SARS 预印本","u":"https://www.biorxiv.org/search/sars","c":"journal","t":["期刊"],"d":""},{"n":"ScienceDirect","u":"https://www.sciencedirect.com/","c":"journal","t":["期刊","需代理"],"d":""},{"n":"Scopus","u":"https://www.scopus.com/","c":"journal","t":["期刊","需登录"],"d":""},{"n":"Springer Link","u":"https://link.springer.com/","c":"journal","t":["期刊"],"d":""},{"n":"Oxford Academic","u":"https://academic.oup.com/journals","c":"journal","t":["期刊"],"d":""},{"n":"Wiley Online Library","u":"https://onlinelibrary.wiley.com/","c":"journal","t":["期刊"],"d":""},{"n":"NEJM","u":"https://www.nejm.org/","c":"journal","t":["期刊"],"d":""},{"n":"The Lancet","u":"https://www.thelancet.com/","c":"journal","t":["期刊"],"d":""},{"n":"BMJ","u":"https://www.bmj.com/","c":"journal","t":["期刊"],"d":""},{"n":"JAMA","u":"https://jamanetwork.com/journals/jama","c":"journal","t":["期刊"],"d":""},{"n":"European Respiratory Journal","u":"http://erj.ersjournals.com/","c":"journal","t":["期刊"],"d":""},{"n":"Annual Reviews","u":"https://www.annualreviews.org/","c":"journal","t":["期刊"],"d":""},{"n":"AACR Journals","u":"https://aacrjournals.org/","c":"journal","t":["期刊"],"d":""},{"n":"RSC Publishing","u":"https://pubs.rsc.org/","c":"journal","t":["期刊"],"d":""},{"n":"Acta Pharmaceutica Sinica B","u":"https://www.sciencedirect.com/journal/acta-pharmaceutica-sinica-b","c":"journal","t":["期刊"],"d":""},{"n":"Sci-Hub (se)","u":"https://sci-hub.se/","c":"journal","t":["常用","需代理"],"d":""},{"n":"Sci-Hub (st)","u":"https://sci-hub.st/","c":"journal","t":["需代理"],"d":""},{"n":"Sci-Hub (ru)","u":"https://sci-hub.ru/","c":"journal","t":["需代理"],"d":""},{"n":"Z-Library 登录入口","u":"https://zh.singlelogin.re/","c":"journal","t":["需代理"],"d":""},{"n":"Z-Library 镜像 zh.z-lib.gs","u":"https://zh.z-lib.gs/","c":"journal","t":["需代理"],"d":""},{"n":"Z-Library 镜像 zh.z-library.sk","u":"https://zh.z-library.sk/","c":"journal","t":["需代理"],"d":""},{"n":"中国知网 CNKI","u":"https://www.cnki.net/","c":"journal","t":["中文","需登录"],"d":""},{"n":"中华医学会 会议注册","u":"https://cmamv.sciconf.cn/cn/reg/info/25608","c":"journal","t":["中文"],"d":""},{"n":"ResearchGate","u":"https://www.researchgate.net/","c":"journal","t":["需登录"],"d":""},{"n":"领研网","u":"https://www.linkresearcher.com/","c":"journal","t":["中文"],"d":""},{"n":"谷粉学术论坛","u":"https://bbs.99lb.net/scholar/","c":"journal","t":["中文"],"d":""},{"n":"科研通 AbleSci","u":"https://www.ablesci.com/","c":"journal","t":["常用","中文"],"d":""},{"n":"小木虫","u":"http://muchong.com/f-366-1","c":"journal","t":["中文"],"d":""},{"n":"丁香园 论坛","u":"https://www.dxy.cn/bbs/newweb/pc/board/74","c":"journal","t":["中文"],"d":""},{"n":"科学网","u":"https://www.sciencenet.cn/life/","c":"journal","t":["中文"],"d":""},{"n":"Selleck 中国","u":"https://www.selleck.cn/","c":"bio","t":["常用","试剂耗材"],"d":""},{"n":"陶术生物 TargetMol","u":"https://www.tsbiochem.com/","c":"bio","t":["试剂耗材"],"d":""},{"n":"碧云天 Beyotime","u":"https://www.beyotime.com/index.htm","c":"bio","t":["常用","试剂耗材"],"d":""},{"n":"金斯瑞 GenScript","u":"https://www.genscript.com.cn/customer","c":"bio","t":["试剂耗材","需登录"],"d":""},{"n":"艾基生物 Igebio","u":"https://www.igebio.com/","c":"bio","t":["试剂耗材"],"d":""},{"n":"擎科生物 Tsingke","u":"https://tsingke.com.cn/","c":"bio","t":["试剂耗材"],"d":""},{"n":"生工 Sangon","u":"https://www.sangon.com/","c":"bio","t":["试剂耗材"],"d":""},{"n":"诺唯赞 Vazyme","u":"https://www.vazyme.com/products2.html","c":"bio","t":["试剂耗材"],"d":""},{"n":"淼灵质粒平台","u":"http://www.miaolingbio.com/","c":"bio","t":["试剂耗材","质粒"],"d":""},{"n":"宝日医 Takara","u":"https://www.takarabiomed.com.cn/","c":"bio","t":["试剂耗材"],"d":""},{"n":"优宁维 Univ-bio","u":"https://www.univ-bio.com/","c":"bio","t":["试剂耗材"],"d":""},{"n":"义翘神州 Sino Biological","u":"https://cn.sinobiological.com/","c":"bio","t":["试剂耗材"],"d":""},{"n":"Invitrogen 英潍捷基","u":"https://www.thermofisher.cn/cn/zh/home/brands/invitrogen.html","c":"bio","t":["试剂耗材"],"d":""},{"n":"鼎国昌盛","u":"http://www.dingguo.com/","c":"bio","t":["试剂耗材"],"d":""},{"n":"Promega 中国","u":"https://wechat.promega.com.cn/","c":"bio","t":["试剂耗材"],"d":""},{"n":"NEB 中国","u":"https://www.neb.cn/","c":"bio","t":["试剂耗材"],"d":""},{"n":"天根 Tiangen","u":"https://www.tiangen.com/index.html","c":"bio","t":["试剂耗材"],"d":""},{"n":"百奥 组化/切片","u":"http://dd.biossci.com/slide/indexdl.php","c":"bio","t":["试剂耗材"],"d":""},{"n":"Biosharp 中性福尔马林","u":"https://www.biosharp.cn/","c":"bio","t":["试剂耗材"],"d":""},{"n":"动物实验手术器械","u":"https://zy.rwdls.com/article/387.html","c":"bio","t":["中文","文档"],"d":""},{"n":"细胞培养板规格与面积","u":"https://wenku.baidu.com/view/7ec03b88561252d381eb6e09.html","c":"bio","t":["中文","文档"],"d":""},{"n":"培养皿大小 / 转染试剂用量","u":"https://zhuanlan.zhihu.com/p/336697801","c":"bio","t":["中文","文档"],"d":""},{"n":"TCID50 计算器","u":"https://conductscience.com/tools/tcid50-calculator","c":"bio","t":["计算"],"d":""},{"n":"质粒拷贝数计算","u":"https://agbio.com.cn/soft/tools/copy/index.html","c":"bio","t":["计算"],"d":""},{"n":"化合物大辞典","u":"https://www.chemicalbook.com/","c":"bio","t":["中文","数据库"],"d":""},{"n":"NCBI GenBank","u":"https://www.ncbi.nlm.nih.gov/genbank/","c":"data","t":["常用","数据库"],"d":""},{"n":"Addgene 质粒库","u":"https://www.addgene.org/","c":"data","t":["常用","数据库","质粒"],"d":""},{"n":"ATCC 细胞库","u":"https://www.atcc.org/","c":"data","t":["数据库"],"d":""},{"n":"GeneCards","u":"https://www.genecards.org/","c":"data","t":["数据库"],"d":""},{"n":"KEGG Pathway","u":"https://www.genome.jp/kegg/pathway.html","c":"data","t":["数据库"],"d":""},{"n":"Ensembl","u":"https://useast.ensembl.org/","c":"data","t":["数据库","下载"],"d":""},{"n":"UniProt","u":"https://www.uniprot.org/","c":"data","t":["数据库"],"d":""},{"n":"PDB 蛋白结构库","u":"https://www.rcsb.org/","c":"data","t":["数据库"],"d":""},{"n":"PubChem","u":"https://pubchem.ncbi.nlm.nih.gov/","c":"data","t":["数据库"],"d":""},{"n":"DrugBank","u":"https://go.drugbank.com/","c":"data","t":["数据库"],"d":""},{"n":"CST 信号通路","u":"https://www.cellsignal.cn/pathways/by-research-area","c":"data","t":["数据库","中文"],"d":""},{"n":"Human Protein Atlas","u":"https://www.proteinatlas.org/","c":"data","t":["数据库"],"d":""},{"n":"IGV 基因组浏览器","u":"https://igv.org/app/","c":"data","t":["数据库"],"d":""},{"n":"国家生物信息中心 数据库导航","u":"https://ngdc.cncb.ac.cn/databasecommons/","c":"data","t":["数据库","中文"],"d":""},{"n":"GPP Web Portal（Broad）","u":"https://portals.broadinstitute.org/gpp/public/","c":"data","t":["质粒","数据库"],"d":""},{"n":"微生信 在线分析","u":"https://www.bioinformatics.com.cn/","c":"data","t":["常用","中文","计算"],"d":""},{"n":"Gene ID 转换（gProfiler）","u":"https://biit.cs.ut.ee/gprofiler/convert","c":"data","t":["计算"],"d":""},{"n":"Gene ID 转换教程-知乎","u":"https://zhuanlan.zhihu.com/p/148116840","c":"data","t":["中文","文档"],"d":""},{"n":"Transcript ID 转 Gene ID-简书","u":"https://www.jianshu.com/p/c06fea33b60f","c":"data","t":["中文","文档"],"d":""},{"n":"Seurat 官方文档","u":"https://satijalab.org/seurat/reference/index.html","c":"data","t":["文档"],"d":""},{"n":"Biostars 生信问答","u":"https://www.biostars.org/","c":"data","t":["论坛"],"d":""},{"n":"基迪奥生信论坛","u":"https://www.omicshare.com/forum/portal.php","c":"data","t":["中文","论坛"],"d":""},{"n":"生信技能树","u":"http://www.biotrainee.com/","c":"data","t":["中文","教程"],"d":""},{"n":"生信技能树 个人博客（Omics）","u":"http://www.bio-info-trainee.com/category/omics/genomics","c":"data","t":["中文","教程"],"d":""},{"n":"Star Protocols","u":"https://star-protocols.cell.com/search","c":"data","t":["文档","方法"],"d":""},{"n":"Nature Protocols","u":"https://www.nature.com/nprot/","c":"data","t":["文档","方法"],"d":""},{"n":"Nature Methods","u":"https://www.nature.com/nmeth/","c":"data","t":["文档","方法"],"d":""},{"n":"Bio-protocol","u":"https://www.bio-protocol.org/en","c":"data","t":["文档","方法"],"d":""},{"n":"Current Protocols","u":"https://currentprotocols.onlinelibrary.wiley.com/","c":"data","t":["文档","方法"],"d":""},{"n":"CSH Protocols","u":"https://cshprotocols.cshlp.org/","c":"data","t":["文档","方法"],"d":""},{"n":"protocol-online","u":"https://www.protocol-online.org/","c":"data","t":["文档","方法"],"d":""},{"n":"NAR Methods","u":"https://academic.oup.com/nar/","c":"data","t":["文档","方法"],"d":""},{"n":"JoVE 实验视频期刊","u":"https://www.jove.com/","c":"data","t":["视频","方法"],"d":""},{"n":"Reaxys 化学信息","u":"https://www.reaxys.com/","c":"data","t":["数据库","需登录"],"d":""},{"n":"黑马专利检索","u":"https://www.himmpat.com/home","c":"data","t":["中文","专利"],"d":""},{"n":"国内专利检索（CNIPA）","u":"https://pss-system.cponline.cnipa.gov.cn/conventionalSearch","c":"data","t":["中文","专利"],"d":""},{"n":"药融云 医药数据","u":"https://db.pharnexcloud.com/home","c":"data","t":["中文","数据库"],"d":""},{"n":"动脉橙 产业数据","u":"https://pro.vbdata.cn/","c":"data","t":["中文","数据库"],"d":""},{"n":"GraphPad 摩尔浓度计算器","u":"https://www.graphpad.com/quickcalcs/molarityform.cfm","c":"tool","t":["常用","计算"],"d":""},{"n":"NEB 连接/酶切计算器","u":"https://nebiocalculator.neb.com/","c":"tool","t":["计算"],"d":""},{"n":"NEBcloner 酶切位点","u":"https://nebcloner.neb.com/#!/redigest","c":"tool","t":["计算"],"d":""},{"n":"Selleck 摩尔浓度计算器","u":"https://www.selleck.cn/molaritycalculator.jsp","c":"tool","t":["计算"],"d":""},{"n":"Sigma 计算器与 App","u":"https://www.sigmaaldrich.cn/CN/zh/support/calculators-and-apps","c":"tool","t":["计算"],"d":""},{"n":"BLASTn","u":"https://blast.ncbi.nlm.nih.gov/Blast.cgi?PROGRAM=blastn&PAGE_TYPE=BlastSearch","c":"tool","t":["常用","设计"],"d":""},{"n":"Primer-BLAST","u":"https://www.ncbi.nlm.nih.gov/tools/primer-blast/","c":"tool","t":["常用","设计"],"d":""},{"n":"OriGene qPCR 引物","u":"https://www.origene.com.cn/category/gene-expression/qpcr-primer-pairs","c":"tool","t":["设计"],"d":""},{"n":"Sigma shRNA 设计","u":"https://www.sigmaaldrich.cn/CN/zh/semi-configurators/shrna","c":"tool","t":["设计"],"d":""},{"n":"赛默飞 RNAi Designer","u":"https://rnaidesigner.thermofisher.com/rnaiexpress/design.do","c":"tool","t":["设计"],"d":""},{"n":"InvivoGen Scramble siRNA","u":"https://www.invivogen.com/sirnawizard/scrambled.php","c":"tool","t":["设计"],"d":""},{"n":"E-CRISP","u":"http://www.e-crisp.org/E-CRISP/","c":"tool","t":["设计","CRISPR"],"d":""},{"n":"CHOPCHOP","u":"https://chopchop.cbu.uib.no/","c":"tool","t":["设计","CRISPR"],"d":""},{"n":"CRISPOR","u":"http://crispor.tefor.net/","c":"tool","t":["设计","CRISPR"],"d":""},{"n":"ZLab CRISPR 资源","u":"https://www.zlab.bio/resources","c":"tool","t":["设计","CRISPR"],"d":""},{"n":"ClustalW 多序列比对","u":"http://www.ebi.ac.uk/Tools/msa/clustalw2/","c":"tool","t":["比对"],"d":""},{"n":"ESPript 比对美化","u":"https://espript.ibcp.fr/ESPript/ESPript/index.php","c":"tool","t":["比对"],"d":""},{"n":"WebLogo 保守序列图","u":"http://weblogo.berkeley.edu/logo.cgi","c":"tool","t":["比对"],"d":""},{"n":"rev_comp 反向互补","u":"http://www.bioinformatics.org/sms/rev_comp.html","c":"tool","t":["序列"],"d":""},{"n":"OligoCalc 寡核苷酸分析","u":"http://www.basic.northwestern.edu/biotools/oligocalc.html","c":"tool","t":["序列"],"d":""},{"n":"TF 结合位点预测","u":"http://alggen.lsi.upc.es/","c":"tool","t":["序列"],"d":""},{"n":"BioGPS 组织表达谱","u":"http://biogps.org/","c":"tool","t":["数据库"],"d":""},{"n":"流式荧光光谱分析","u":"https://www.biolegend.com/fr-ch/spectra-analyzer","c":"tool","t":["实验"],"d":""},{"n":"Signal-3L 信号肽预测","u":"http://www.csbio.sjtu.edu.cn/bioinf/Signal-3Lv1/","c":"tool","t":["序列"],"d":""},{"n":"ExPASy 蛋白工具集","u":"https://www.expasy.org/","c":"tool","t":["常用","计算"],"d":""},{"n":"BioRender 科研绘图","u":"https://biorender.com/","c":"tool","t":["绘图"],"d":""},{"n":"BioIcons 免费图标","u":"https://bioicons.com/","c":"tool","t":["绘图"],"d":""},{"n":"Biogdp 生信绘图（BioRender 平替）","u":"https://biogdp.com/zh","c":"tool","t":["绘图"],"d":""},{"n":"Servier 科研绘图模板","u":"https://smart.servier.com/image-set-download/","c":"tool","t":["绘图","下载"],"d":""},{"n":"SciencePlots（Matplotlib 期刊风格）","u":"https://github.com/garrettj403/SciencePlots","c":"tool","t":["绘图"],"d":""},{"n":"ImageLayoutManager CLI 排版","u":"https://luojiajiang.uk/image-layout-manager/cli.html","c":"tool","t":["绘图"],"d":""},{"n":"GIMP 图像处理","u":"https://www.gimp.org/","c":"tool","t":["绘图","下载"],"d":""},{"n":"RGB / 十六进制转换","u":"https://www.sioe.cn/yingyong/yanse-rgb-16/","c":"tool","t":["转换","中文"],"d":""},{"n":"RGB 转 16 进制（菜鸟）","u":"https://www.jyshare.com/front-end/55/","c":"tool","t":["转换","中文"],"d":""},{"n":"Word 字号磅值换算","u":"https://blog.csdn.net/QAQ_King/article/details/128776411","c":"tool","t":["转换","文档"],"d":""},{"n":"Goblin Tools（任务拆解）","u":"https://goblin.tools/","c":"tool","t":["效率"],"d":""},{"n":"色环电阻计算器","u":"https://www.digikey.cn/zh/resources/conversion-calculators/conversion-calculator-resistor-color-code","c":"tool","t":["计算","硬件"],"d":""},{"n":"论文配色：跟 Nature 学","u":"https://blog.csdn.net/2301_77413856/article/details/140200971","c":"tool","t":["绘图","文档"],"d":""},{"n":"Zotero 文献管理","u":"https://www.zotero.org/","c":"tool","t":["文献管理","下载"],"d":""},{"n":"SnapGene 载体图谱","u":"https://www.snapgene.com/","c":"tool","t":["质粒","软件"],"d":""},{"n":"OneKeyTools PPT 插件","u":"http://oktools.xyz/","c":"tool","t":["软件","绘图"],"d":""},{"n":"PPT 世界社区","u":"https://www.pptx.cn/circle/wedesign","c":"tool","t":["中文","绘图"],"d":""},{"n":"AI4Paper 账户服务","u":"https://ai4paper.pro/checkout/plugin/quota","c":"tool","t":["AI","需登录"],"d":""},{"n":"DeepSeek 官网","u":"https://chat.deepseek.com/","c":"ai","t":["常用","免费"],"d":""},{"n":"DeepSeek 开放平台用量","u":"https://platform.deepseek.com/usage","c":"ai","t":["需登录"],"d":""},{"n":"DeepSeekMine","u":"https://deepseekmine.com/","c":"ai","t":["需登录"],"d":""},{"n":"硅基流动 SiliconFlow","u":"https://cloud.siliconflow.cn/models","c":"ai","t":["常用","需登录"],"d":""},{"n":"ChatPDF 论文阅读","u":"https://www.chatpdf.com/","c":"ai","t":["免费"],"d":""},{"n":"AI 工具集","u":"https://ai-bot.cn/","c":"ai","t":["中文","导航"],"d":""},{"n":"30 个 AI 工具","u":"https://www.30aitool.com/basis","c":"ai","t":["中文","导航"],"d":""},{"n":"三花 AI 导航","u":"https://sanhua.himrr.com/","c":"ai","t":["中文","导航"],"d":""},{"n":"AI Short 提示词","u":"https://www.aishort.top/","c":"ai","t":["中文"],"d":""},{"n":"迅飞星火","u":"https://xinghuo.xfyun.cn/desk","c":"ai","t":["需登录"],"d":""},{"n":"LibreChat（待自建）","u":"https://www.librechat.ai/","c":"ai","t":["自建"],"d":""},{"n":"Cherry Studio","u":"https://cherry-ai.com/download","c":"ai","t":["软件","下载"],"d":""},{"n":"Chatbox AI","u":"https://chatboxai.app/zh","c":"ai","t":["软件","下载"],"d":""},{"n":"Cursor 编辑器","u":"https://www.cursor-ide.com/","c":"ai","t":["软件"],"d":""},{"n":"MedPeer 科研 AI","u":"https://www.medpeer.cn/","c":"ai","t":["中文","需登录"],"d":""},{"n":"Researcher.Life（AI 学术）","u":"https://discovery.researcher.life/","c":"ai","t":["免费"],"d":""},{"n":"SmartQuantAI 文献传递","u":"https://www.smartquantai.com/","c":"ai","t":["中文"],"d":""},{"n":"Miracle 云（mc）","u":"https://cloud.miracle.ac.cn/","c":"ai","t":["需登录"],"d":""},{"n":"本地满血 API 部署教程","u":"https://www.bilibili.com/video/BV1cJNQeSEC7?t=3.0","c":"ai","t":["视频","教程"],"d":""},{"n":"Discord（ChatGPT 社区）","u":"https://discord.com/","c":"ai","t":["需代理"],"d":""},{"n":"STM32CubeIDE 官方页","u":"https://www.st.com/content/st_com/en/products/development-tools/software-development-tools/stm32-software-development-tools/stm32-ides/stm32cubeide.html","c":"embed","t":["软件","下载"],"d":""},{"n":"GNU Arm Embedded Toolchain","u":"https://developer.arm.com/downloads/-/gnu-rm","c":"embed","t":["下载"],"d":""},{"n":"WCHISPTool 烧录工具（CH32F103）","u":"https://www.wch.cn/downloads/WCHISPTool_Setup_exe.html","c":"embed","t":["下载","硬件"],"d":""},{"n":"CH32F103 产品页","u":"https://www.wch.cn/products/CH32F103.html","c":"embed","t":["硬件"],"d":""},{"n":"沁恒微电子社区","u":"https://www.wch.cn/bbs/search.html?q=CH32F103","c":"embed","t":["论坛","中文"],"d":""},{"n":"CH32F103 开发与下载简介","u":"https://developer.baidu.com/article/details/3122832","c":"embed","t":["中文","文档"],"d":""},{"n":"MounRiver Studio","u":"https://mounriver.com/download","c":"embed","t":["软件","下载"],"d":""},{"n":"立创·天空星 筑基学习板","u":"https://oshwhub.com/li-chuang-kai-fa-ban/tian-kong-xing-zhu-ji-xue-xi-ban","c":"embed","t":["硬件","中文"],"d":""},{"n":"立创·梁山派 天空星开发板","u":"https://oshwhub.com/li-chuang-kai-fa-ban/li-chuang-liang-shan-pai-tian-kong-xing-kai-fa-ban","c":"embed","t":["硬件","中文"],"d":""},{"n":"野火 全部产品资料","u":"https://doc.embedfire.com/products/link/zh/latest/index.html","c":"embed","t":["文档","下载"],"d":""},{"n":"野火 B站空间","u":"https://space.bilibili.com/356820657","c":"embed","t":["视频"],"d":""},{"n":"野火 鲁班猫视频","u":"https://www.bilibili.com/video/BV1iX4y127Mg","c":"embed","t":["视频"],"d":""},{"n":"正点原子 i.MX6ULL 阿尔法开发板","u":"http://www.openedv.com/docs/boards/arm-linux/zdyz-i.mx6ull.html","c":"embed","t":["文档","硬件"],"d":""},{"n":"正点原子 论坛","u":"http://www.openedv.com/","c":"embed","t":["论坛","中文"],"d":""},{"n":"正点原子 Linux 系列视频","u":"https://space.bilibili.com/394620890/lists/2042045?type=series","c":"embed","t":["视频"],"d":""},{"n":"i.MX6ULL 原子视频","u":"https://www.bilibili.com/video/BV1yE411h7uQ","c":"embed","t":["视频"],"d":""},{"n":"百问网 韦东山官网","u":"https://100ask.net/","c":"embed","t":["常用","中文"],"d":""},{"n":"100ASK 社区论坛","u":"https://100ask.net/forums","c":"embed","t":["论坛"],"d":""},{"n":"100ASK 视频课程","u":"https://video.100ask.net/","c":"embed","t":["视频","付费"],"d":""},{"n":"IMX6ULL_PRO 开发板资料","u":"https://download.100ask.net/boards/Nxp/100ask_imx6ull_pro/index.html","c":"embed","t":["下载"],"d":""},{"n":"韦东山 Linux 教程文档","u":"https://linux.100ask.net/","c":"embed","t":["文档"],"d":""},{"n":"韦东山 MCU 教程","u":"https://mcu.100ask.net/","c":"embed","t":["文档"],"d":""},{"n":"韦东山 RTOS 教程","u":"https://rtos.100ask.net/docs/all_video_tutorials","c":"embed","t":["文档"],"d":""},{"n":"视频/文档/源码对照表","u":"https://linux.100ask.net/docs/Linux-CourseList/Part1/","c":"embed","t":["文档"],"d":""},{"n":"韦东山 嵌入式 Linux 入门到精通","u":"https://www.bilibili.com/video/BV1w4411B7a4","c":"embed","t":["视频"],"d":""},{"n":"韦东山 看懂硬件与原理图","u":"https://www.bilibili.com/video/BV1ga4y1Y7PL","c":"embed","t":["视频","硬件"],"d":""},{"n":"韦东山 STM32 HAL 快速入门","u":"https://www.bilibili.com/video/BV1Ey4y1w7wN","c":"embed","t":["视频"],"d":""},{"n":"嵌入式 Linux 应用开发（第4篇）","u":"https://www.bilibili.com/video/BV1kk4y117Tu","c":"embed","t":["视频"],"d":""},{"n":"嵌入式 Linux 驱动开发（第5篇）","u":"https://www.bilibili.com/video/BV14f4y1Q7ti","c":"embed","t":["视频"],"d":""},{"n":"铁头山羊 FreeRTOS 教程","u":"https://kcn06ia36zs4.feishu.cn/wiki/TAdFwerrOigrpYkrlpMc9aISnnc","c":"embed","t":["文档","教程"],"d":""},{"n":"铁头山羊 STM32 入门【新版】","u":"https://www.bilibili.com/video/BV11X4y1j7si","c":"embed","t":["视频"],"d":""},{"n":"STM32 入门教程 2023 版","u":"https://www.bilibili.com/video/BV1th411z7sn","c":"embed","t":["视频","常用"],"d":""},{"n":"STM32 HAL 库课程","u":"https://www.bilibili.com/video/BV16J4m1w7HB","c":"embed","t":["视频"],"d":""},{"n":"FreeRTOS 入门与工程实践","u":"https://www.bilibili.com/video/BV1Jw411i7Fz","c":"embed","t":["视频"],"d":""},{"n":"ARM 处理器全解析（198集）","u":"https://www.bilibili.com/video/BV1m96uBBEJA","c":"embed","t":["视频"],"d":""},{"n":"普中 51 单片机教程（上）","u":"https://www.bilibili.com/video/BV1RB4y1i71i","c":"embed","t":["视频"],"d":""},{"n":"普中 51 单片机教程（下）","u":"https://www.bilibili.com/video/BV1jt4y1b7io","c":"embed","t":["视频"],"d":""},{"n":"普中 STM32F407 视频教程","u":"https://www.bilibili.com/video/BV1jS4y1H7RQ","c":"embed","t":["视频"],"d":""},{"n":"江协科技 51 教程","u":"https://www.bilibili.com/video/BV1Mb411e7re","c":"embed","t":["视频"],"d":""},{"n":"Ai8051U 图形化配置（上）","u":"https://www.bilibili.com/video/BV1L66FB4ETP","c":"embed","t":["视频"],"d":""},{"n":"Ai8051U 图形化配置（下）","u":"https://www.bilibili.com/video/BV1zX6YB4ESW","c":"embed","t":["视频"],"d":""},{"n":"GTX-TX-1C 开发板教程","u":"https://www.bilibili.com/video/BV1rD4y1t7nt","c":"embed","t":["视频"],"d":""},{"n":"TX-1C 标准板课程合集","u":"https://space.bilibili.com/3546904371661294/lists/4981367?type=series","c":"embed","t":["视频"],"d":""},{"n":"TX-1C 扩展板课程合集","u":"https://space.bilibili.com/3546904371661294/lists/4759876?type=series","c":"embed","t":["视频"],"d":""},{"n":"郭天祥 51 教程（新版）","u":"https://www.bilibili.com/video/BV1xJ411X7Qu","c":"embed","t":["视频"],"d":""},{"n":"ESP32S3 SuperMini 入门","u":"https://www.nologo.tech/product/esp32/esp32s3/esp32s3supermini/esp32S3SuperMini.html","c":"embed","t":["文档","硬件"],"d":""},{"n":"小智 AI 聊天机器人（xiaozhi-esp32）","u":"https://gitee.com/tenclass/xiaozhi-esp32","c":"embed","t":["开源"],"d":""},{"n":"ESP32 MicroPython 手把手","u":"https://www.bilibili.com/video/BV1n24y1Z7UU","c":"embed","t":["视频"],"d":""},{"n":"ESP32 MicroPython 基础教程","u":"https://www.bilibili.com/video/BV1PG41157Qg","c":"embed","t":["视频"],"d":""},{"n":"ESP32-IDF 入门课程","u":"https://www.bilibili.com/video/BV1eRg7exEcT","c":"embed","t":["视频"],"d":""},{"n":"Wokwi ESP32 在线仿真","u":"https://wokwi.com/esp32","c":"embed","t":["常用","仿真"],"d":""},{"n":"Arduino 电机专项教程","u":"https://www.bilibili.com/video/BV1yb411N7zS","c":"embed","t":["视频"],"d":""},{"n":"太极创客 Arduino 合辑","u":"https://space.bilibili.com/103589285/lists/458662?type=series","c":"embed","t":["视频"],"d":""},{"n":"鹿小班 DAPLink 资料","u":"https://www.xinlucity.com/?s=resourcedetail/index/id/60.html","c":"embed","t":["下载"],"d":""},{"n":"鹿小班 STM32H743 核心板","u":"https://www.xinlucity.com/?s=resource/index/wd/67764763.html","c":"embed","t":["下载"],"d":""},{"n":"鹿小班 STM32F407 核心板","u":"https://www.xinlucity.com/?s=resource/index/cid/3.html","c":"embed","t":["下载"],"d":""},{"n":"万象奥科 HD-RK3506-EVB 文档","u":"https://vanxoak.yuque.com/wb353n/hd-rk3506-evb","c":"embed","t":["文档"],"d":""},{"n":"树莓派教程（海外）","u":"https://www.bilibili.com/video/BV16r68YZEgW","c":"embed","t":["视频"],"d":""},{"n":"硬件工程师入门教程","u":"https://www.bilibili.com/video/BV1gHSyY3E6q","c":"embed","t":["视频","硬件"],"d":""},{"n":"Altium Designer 20/19 全38集","u":"https://www.bilibili.com/video/BV16t411N7RD","c":"embed","t":["视频","硬件"],"d":""},{"n":"模拟电子技术基础（上交 郑益慧）","u":"https://www.bilibili.com/video/BV1Vp4y1y7wR","c":"embed","t":["视频","硬件"],"d":""},{"n":"LTspice 教程","u":"https://www.bilibili.com/video/BV1Sy4y1m73e","c":"embed","t":["视频","硬件"],"d":""},{"n":"Qt + VS 环境配置图文","u":"https://blog.csdn.net/qq_62888264/article/details/132645054","c":"embed","t":["教程","文档"],"d":""},{"n":"集成电路应用开发（语雀）","u":"https://www.yuque.com/icheima","c":"embed","t":["文档","中文"],"d":""},{"n":"电子发烧友论坛","u":"https://bbs.elecfans.com/","c":"embed","t":["论坛","中文"],"d":""},{"n":"电子发烧友 主站","u":"https://www.elecfans.com/","c":"embed","t":["中文"],"d":""},{"n":"电子爱好者","u":"https://www.dianziaihaozhe.com/","c":"embed","t":["论坛","中文"],"d":""},{"n":"CentOS 8.5 镜像","u":"https://vault.centos.org/centos/8.5.2111/isos/x86_64/","c":"embed","t":["下载"],"d":""},{"n":"开发板资料盘（提取码 wxqb）","u":"https://pan.baidu.com/s/1woZobEKZPU0eykuzy5jd-w","c":"embed","t":["下载","提取码wxqb"],"d":""},{"n":"Keil5 C51 V5.38（提取码 6m3z）","u":"https://pan.baidu.com/s/1QlDr7R0Qym1dyTGWOLsssA","c":"embed","t":["下载","提取码6m3z"],"d":""},{"n":"Keil5 C251 5.25（提取码 ah8t）","u":"https://pan.baidu.com/s/1WXdleBS7rpCm1JGcymAc7Q","c":"embed","t":["下载","提取码ah8t"],"d":""},{"n":"开发板例程 1.2 绿板（提取码 j8dn）","u":"https://pan.baidu.com/s/14BCJCGax1jcqFFRMYt2A3A","c":"embed","t":["下载","提取码j8dn"],"d":""},{"n":"开发板例程 精华板 1.3（提取码 ttdy）","u":"https://pan.baidu.com/s/1oqe3UE_zqJdzcBVT_1kObw","c":"embed","t":["下载","提取码ttdy"],"d":""},{"n":"STC32G12K128 核心板（提取码 NICE）","u":"https://pan.baidu.com/s/17S14YDjTdPCNlpn8pZXLIw","c":"embed","t":["下载","提取码NICE"],"d":""},{"n":"bilibili 主站","u":"https://www.bilibili.com/","c":"learn","t":["常用","视频"],"d":""},{"n":"浙大 翁恺 C语言 129讲","u":"https://www.bilibili.com/video/BV1dr4y1n7vA","c":"learn","t":["视频","常用"],"d":""},{"n":"青岛大学 王卓 数据结构","u":"https://www.bilibili.com/video/BV1nJ411V7bd","c":"learn","t":["视频"],"d":""},{"n":"小甲鱼 C++ 快速入门","u":"https://www.bilibili.com/video/BV1Ps411w73m","c":"learn","t":["视频"],"d":""},{"n":"C++ 零基础 100 集（2026）","u":"https://www.bilibili.com/video/BV1S6rpBUES5","c":"learn","t":["视频"],"d":""},{"n":"C语言 零基础 100 集（2026）","u":"https://www.bilibili.com/video/BV1XnrzBiEZi","c":"learn","t":["视频"],"d":""},{"n":"C++ 零基础 500 集（2025）","u":"https://www.bilibili.com/video/BV1cj91YMEUa","c":"learn","t":["视频"],"d":""},{"n":"C++ 教程 600 集","u":"https://www.bilibili.com/video/BV1Vm4y1w7s3","c":"learn","t":["视频"],"d":""},{"n":"C++ 全套教程 600 集（2025）","u":"https://www.bilibili.com/video/BV1QXTxztEuH","c":"learn","t":["视频"],"d":""},{"n":"C语言 500 集（2026）","u":"https://www.bilibili.com/video/BV18UrKBuEkT","c":"learn","t":["视频"],"d":""},{"n":"C++ 零基础（2025）","u":"https://www.bilibili.com/video/BV1bdySBPEqo","c":"learn","t":["视频"],"d":""},{"n":"现代 C++ 教程 2023","u":"https://www.bilibili.com/video/BV1D84y1t76J","c":"learn","t":["视频"],"d":""},{"n":"C++ 游戏编程实战（油管搬运）","u":"https://www.bilibili.com/video/BV1a94y1Y7Jw","c":"learn","t":["视频"],"d":""},{"n":"C++ 零基础 300 集（2025）","u":"https://www.bilibili.com/video/BV1gExezbE2h","c":"learn","t":["视频"],"d":""},{"n":"《C++ Primer Plus》第六版","u":"https://www.bilibili.com/video/BV1sK41127iZ","c":"learn","t":["视频"],"d":""},{"n":"Python + 机器学习 + 深度学习","u":"https://www.bilibili.com/video/BV17W42197Nm","c":"learn","t":["视频"],"d":""},{"n":"Python 全套教程 748 集","u":"https://www.bilibili.com/video/BV1vs29BZEzG","c":"learn","t":["视频"],"d":""},{"n":"机器学习模型训练全流程","u":"https://zhuanlan.zhihu.com/p/184673895","c":"learn","t":["文档","中文"],"d":""},{"n":"算法学习路线（10分钟）","u":"https://www.bilibili.com/video/BV1GvVizGEmU","c":"learn","t":["视频","算法"],"d":""},{"n":"LeetCode 刷题 288 道","u":"https://www.bilibili.com/video/BV1o3EizxEJd","c":"learn","t":["视频","算法"],"d":""},{"n":"左程云 算法与数据结构全家桶","u":"https://www.bilibili.com/video/BV13g41157hK","c":"learn","t":["视频","算法"],"d":""},{"n":"蓝桥杯 / ACM 竞赛课","u":"https://www.bilibili.com/video/BV1Wx2TBrEEp","c":"learn","t":["视频","算法"],"d":""},{"n":"CSP-J 算法（第2课 模拟）","u":"https://www.bilibili.com/video/BV17w9ZYKEqG","c":"learn","t":["视频","算法"],"d":""},{"n":"计算机图形学 算法+C++实现","u":"https://www.bilibili.com/video/BV1JZ4y1w7KZ","c":"learn","t":["视频","算法"],"d":""},{"n":"45 种常用算法 C++ 讲解","u":"https://www.bilibili.com/video/BV13E411d75X","c":"learn","t":["视频","算法"],"d":""},{"n":"算法·入门篇 课堂随笔","u":"https://blog.csdn.net/qq_52606908/article/details/154337656","c":"learn","t":["文档","算法"],"d":""},{"n":"C/C++ 算法竞赛入门篇","u":"https://www.bilibili.com/video/BV1BzhgzsExK","c":"learn","t":["视频","算法"],"d":""},{"n":"韩顺平 一周学会 Linux","u":"https://www.bilibili.com/video/BV1Sv411r7vd","c":"learn","t":["视频"],"d":""},{"n":"国家高等教育智慧教育平台","u":"https://higher.smartedu.cn/","c":"learn","t":["中文","课程"],"d":""},{"n":"广东全民终身学习平台","u":"https://www.gdlll.cn/home","c":"learn","t":["中文","课程"],"d":""},{"n":"超星学习通 课程","u":"https://mooc1.chaoxing.com/course/portal/Gd5XeyPrz4ivRG2Xvsxk-g==","c":"learn","t":["中文","课程"],"d":""},{"n":"解螺旋训练营","u":"https://www.helixlife.cn/","c":"learn","t":["中文","课程"],"d":""},{"n":"刘小乐 STAT115 生信课","u":"https://liulab-dfci.github.io/resources/html/STAT115_2020_Module1.html","c":"learn","t":["视频","生信"],"d":""},{"n":"StatQuest 系列笔记汇总","u":"https://mp.weixin.qq.com/s?__biz=MzAxMzkzNDUyOQ==&mid=2247484185&idx=1&sn=59944cbe7a078148287707e25be70467","c":"learn","t":["中文","生信"],"d":""},{"n":"RNAseq 分析流程（公众号）","u":"https://mp.weixin.qq.com/s?__biz=Mzg4MDY3NTcyNQ==&mid=2247487116&idx=7&sn=79234e83aaef478146f0ecf9afeab0d7","c":"learn","t":["中文","生信"],"d":""},{"n":"新冠肺部单细胞图谱 Python 全流程","u":"https://mp.weixin.qq.com/s/PFG0JXHm8BTA1ZBf-r1Lxw","c":"learn","t":["中文","生信"],"d":""},{"n":"jenny 生信 NGS-pipeline","u":"https://github.com/jmzeng1314/NGS-pipeline","c":"learn","t":["生信","代码"],"d":""},{"n":"Python 生物信息学数据管理","u":"https://bitbucket.org/krother/python-for-biologists","c":"learn","t":["生信","文档"],"d":""},{"n":"Snakemake 入门教程","u":"https://blog.csdn.net/m0_49960764/article/details/121258501","c":"learn","t":["文档","生信"],"d":""},{"n":"Bio-OS 大赛详情","u":"https://bio-os.github.io/activity/index.html","c":"learn","t":["生信"],"d":""},{"n":"TyingLearn 打字","u":"https://www.typinglearn.cn/index","c":"learn","t":["打字","常用"],"d":""},{"n":"qwerty 打字练习","u":"https://qwerty.kaiyi.cool/","c":"learn","t":["打字"],"d":""},{"n":"Type Words 六级词","u":"https://2study.top/practice-words/cet6","c":"learn","t":["英语"],"d":""},{"n":"极速打字网","u":"https://jsxiaoshi.com/","c":"learn","t":["打字","中文"],"d":""},{"n":"如何学粤语","u":"https://www.lumin.tech/interests/cantonese-learning/","c":"learn","t":["中文","语言"],"d":""},{"n":"WSL + Ubuntu 安装指南","u":"https://zhuanlan.zhihu.com/p/1950640316274184198","c":"learn","t":["教程","中文"],"d":""},{"n":"WSL 更新包下载","u":"https://github.com/microsoft/WSL/releases","c":"learn","t":["下载"],"d":""},{"n":"解决桌面箭头角标","u":"https://zhuanlan.zhihu.com/p/30865952385","c":"learn","t":["教程","中文"],"d":""},{"n":"BioMini 本地部署","u":"https://blog.csdn.net/gitblog_00508/article/details/148362557","c":"learn","t":["教程","AI"],"d":""},{"n":"ego(lite) AI 浏览器文档","u":"https://lite.ego.app/document/zh/docs/windows/quick-start","c":"learn","t":["软件","文档"],"d":""},{"n":"68 键机械键盘手册","u":"https://cryolitia.beiyan.us/DK68Manual/README_CN.html","c":"learn","t":["文档","硬件"],"d":""},{"n":"GS3104T-Li 键盘快捷键","u":"https://www.cnblogs.com/polax/p/18198930","c":"learn","t":["文档","硬件"],"d":""},{"n":"Visual Studio Code","u":"https://code.visualstudio.com/","c":"soft","t":["软件","常用"],"d":""},{"n":"Git for Windows","u":"https://git-scm.com/download/win","c":"soft","t":["软件"],"d":""},{"n":"MobaXterm","u":"https://mobaxterm.mobatek.net/download.html","c":"soft","t":["软件"],"d":""},{"n":"VMware Workstation Pro","u":"https://www.vmware.com/products/desktop-hypervisor/workstation-and-fusion","c":"soft","t":["软件"],"d":""},{"n":"OBS Studio","u":"https://obsproject.com/download","c":"soft","t":["软件"],"d":""},{"n":"PowerToys","u":"https://github.com/microsoft/PowerToys/releases","c":"soft","t":["软件"],"d":""},{"n":"PotPlayer","u":"https://potplayer.daum.net/","c":"soft","t":["软件"],"d":""},{"n":"分区助手","u":"https://www.disktool.cn/","c":"soft","t":["软件","中文"],"d":""},{"n":"SD Card Formatter","u":"https://www.sdcard.org/downloads/formatter/","c":"soft","t":["软件"],"d":""},{"n":"Typora","u":"https://typora.io/","c":"soft","t":["软件"],"d":""},{"n":"BookMDViewer（Typora 平替）","u":"https://github.com/craig7351/bookMDViewer","c":"soft","t":["软件","开源"],"d":""},{"n":"Zotero 下载","u":"https://www.zotero.org/download/","c":"soft","t":["软件","常用"],"d":""},{"n":"Cytoscape","u":"https://cytoscape.org/download.html","c":"soft","t":["软件","绘图"],"d":""},{"n":"Gephi","u":"https://gephi.org/users/download/","c":"soft","t":["软件","绘图"],"d":""},{"n":"UGENE","u":"https://ugene.net/download-all.html","c":"soft","t":["软件"],"d":""},{"n":"SciDAVis","u":"https://sourceforge.net/projects/scidavis/","c":"soft","t":["软件","绘图"],"d":""},{"n":"Veusz 4.2.1","u":"https://veusz.github.io/","c":"soft","t":["软件","绘图"],"d":""},{"n":"RStudio Desktop","u":"https://posit.co/download/rstudio-desktop/","c":"soft","t":["软件","常用"],"d":""},{"n":"Positron（数据科学 IDE）","u":"https://positron.posit.co/","c":"soft","t":["软件"],"d":""},{"n":"Mybase Desktop 8","u":"https://www.wjjsoft.com/mybase_desktop.html","c":"soft","t":["软件"],"d":""},{"n":"Pointofix 屏幕笔","u":"https://www.pointofix.de/download.php","c":"soft","t":["软件"],"d":""},{"n":"HEU KMS Activator","u":"https://github.com/zbezj/HEU_KMS_Activator","c":"soft","t":["软件"],"d":""},{"n":"reader 阅读服务器","u":"https://github.com/hectorqin/reader","c":"soft","t":["软件","开源"],"d":""},{"n":"盘搜搜（网盘搜索）","u":"https://pansousuo.top/","c":"soft","t":["搜索"],"d":""},{"n":"软件安装公众号","u":"https://mp.weixin.qq.com/s?__biz=MzkzMTA5NjM4NA==&mid=2247573135&idx=1&sn=a2a804e79a9bbf76d83e883062af27d7","c":"soft","t":["中文"],"d":""},{"n":"Keil uVision5","u":"bing","c":"soft","t":["软件","搜索","单片机"],"d":""},{"n":"STM32 ST-Link Utility","u":"bing","c":"soft","t":["软件","搜索","单片机"],"d":""},{"n":"STM32CubeMX","u":"https://www.st.com/en/development-tools/stm32cubemx.html","c":"soft","t":["软件","单片机"],"d":""},{"n":"WCH-Link Utility","u":"bing","c":"soft","t":["软件","搜索","单片机"],"d":""},{"n":"AIAPP-ISP（STC 下载）","u":"https://www.stcai.com/","c":"soft","t":["软件","中文","单片机"],"d":""},{"n":"PZ-ISP（普中下载器）","u":"bing","c":"soft","t":["软件","搜索","单片机"],"d":""},{"n":"MCUISP","u":"bing","c":"soft","t":["软件","搜索","单片机"],"d":""},{"n":"Altium Designer","u":"bing","c":"soft","t":["软件","搜索","硬件"],"d":""},{"n":"Multisim 14","u":"bing","c":"soft","t":["软件","搜索","硬件"],"d":""},{"n":"LTspice","u":"https://www.analog.com/en/resources/design-tools-and-calculators/ltspice-simulator.html","c":"soft","t":["软件","硬件"],"d":""},{"n":"烟火多功能调试助手","u":"bing","c":"soft","t":["软件","搜索","串口"],"d":""},{"n":"串口调试助手 UART Assist","u":"bing","c":"soft","t":["软件","搜索","串口"],"d":""},{"n":"Ninja 构建工具","u":"https://github.com/ninja-build/ninja/releases","c":"soft","t":["软件","开源"],"d":""},{"n":"Anaconda / Miniconda","u":"https://www.anaconda.com/download","c":"soft","t":["软件","常用"],"d":""},{"n":"兄弟打印机驱动","u":"https://www.95105369.com/Web/DownloadDisp.aspx?0a7729b9592a7b0a9de5f7c365bbffaa","c":"soft","t":["下载","中文"],"d":""},{"n":"广东省事业单位公开招聘（报名）","u":"https://ggfw.hrss.gd.gov.cn/sydwbk/","c":"job","t":["常用","招聘","需登录"],"d":""},{"n":"我的档案（广东人社）","u":"https://ggfw.hrss.gd.gov.cn/rsdabzh/","c":"job","t":["招聘","需登录"],"d":""},{"n":"广东省生物技术研究院（动监所）","u":"https://www.gdbri.cn/Item/113848.aspx","c":"job","t":["常用","招聘"],"d":""},{"n":"广东省农科院 2026 招聘公告","u":"https://www.gdaas.cn/tzggn/rczp/content/post_1325648.html","c":"job","t":["招聘"],"d":""},{"n":"昆明学院 2026 高层次人才引进","u":"https://baoming.ynexam.com/my","c":"job","t":["招聘","需登录"],"d":""},{"n":"昆明学院 人事处公告","u":"https://www.kmu.edu.cn/info/1037/14935.htm","c":"job","t":["招聘"],"d":""},{"n":"赣南医科大学 2026 招聘公告","u":"https://www.gmu.cn/info/1010/33838.htm","c":"job","t":["招聘"],"d":""},{"n":"广东医科大学 招聘系统","u":"https://zp.gdmu.edu.cn/rsfw1/sys/zpglxt/extranet/index.do","c":"job","t":["招聘","需登录"],"d":""},{"n":"广东医科大学 招聘公告","u":"https://www.gdmu.edu.cn/info/1171/50752.htm","c":"job","t":["招聘"],"d":""},{"n":"大理大学 招聘系统","u":"https://dluzp.dali.edu.cn/zp.html","c":"job","t":["招聘","需登录"],"d":""},{"n":"观沧海（历史地图）","u":"https://www.ageeye.cn/","c":"misc","t":["中文","地图"],"d":""},{"n":"Old Maps Online","u":"https://www.oldmapsonline.org/","c":"misc","t":["地图"],"d":""},{"n":"广东省标准地图服务","u":"https://nr.gd.gov.cn/map/bzdt/Index.aspx","c":"misc","t":["中文","地图"],"d":""},{"n":"书格（古籍数字图书馆）","u":"https://www.shuge.org/","c":"misc","t":["中文","古籍"],"d":""},{"n":"识典古籍","u":"https://www.shidianguji.com/","c":"misc","t":["中文","古籍"],"d":""},{"n":"简谱之家","u":"https://www.jianpu.net/","c":"misc","t":["中文","音乐"],"d":""},{"n":"神奇的程序员","u":"https://www.kaisir.cn/","c":"misc","t":["中文"],"d":""},{"n":"daedalOS（网页操作系统）","u":"https://dustinbrett.com/","c":"misc","t":["趣味"],"d":""},{"n":"搜软导航","u":"https://so.sosorj.com/","c":"misc","t":["中文","导航"],"d":""},{"n":"小米路由器后台","u":"http://192.168.31.1/","c":"misc","t":["内网"],"d":""},{"n":"fastlink 官网","u":"https://web03.fastlink.cc/","c":"misc","t":["代理","需登录"],"d":""},{"n":"fastlink 备用","u":"https://www.fastlink.li/","c":"misc","t":["代理"],"d":""},{"n":"fastlink 国内加速","u":"https://www.flcn.cc/","c":"misc","t":["代理"],"d":""},{"n":"v2rayN 客户端","u":"https://github.com/2dust/v2rayN/releases","c":"misc","t":["代理","下载"],"d":""},{"n":"鸽子用户交流群（TG）","u":"https://t.me/gezigg","c":"misc","t":["代理","需代理"],"d":""},{"n":"六合彩走势图","u":"https://zh.lottolyzer.com/home/hong-kong/mark-six","c":"misc","t":["趣味"],"d":""}];
+</script>
+<script>
+(function(){
+  "use strict";
+  var KEY = "wanglab_portal_v1";
+  var CATMAP = {}; CATS.forEach(function(c){ CATMAP[c.k] = c; });
+  var ALLTAGS = ["常用","内网","需登录","需代理","中文","视频","文档","教程","下载","软件","期刊","数据库","计算","绘图","硬件","试剂耗材","招聘","方法","搜索"];
+
+  /* ---------- state ---------- */
+  var S = {fav:[], hide:[], custom:[], recent:[], noFav:[], theme:"light", favOnly:false, tags:[]};
+  try { var raw = localStorage.getItem(KEY); if(raw) S = Object.assign(S, JSON.parse(raw)); } catch(e){}
+  var favSet = new Set(S.fav), hideSet = new Set(S.hide), noFavSet = new Set(S.noFav);
+  function save(){
+    S.fav = Array.from(favSet); S.hide = Array.from(hideSet); S.noFav = Array.from(noFavSet);
+    try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e){}
+  }
+
+  /* ---------- data ---------- */
+  function idOf(it){ return it.u === "bing" ? "q:" + it.n : it.u; }
+  var ALL = ITEMS.concat(S.custom).map(function(it){
+    var o = {}; for(var k in it) o[k] = it[k]; o.id = idOf(it); return o;
+  });
+  var byCat = {};
+  ALL.forEach(function(it){ (byCat[it.c] = byCat[it.c] || []).push(it); });
+
+  function hostOf(it){
+    if(it.u === "bing") return "搜索 · " + it.n;
+    try { return new URL(it.u).host.replace(/^www\./,""); } catch(e){ return it.u; }
+  }
+  function hrefOf(it){
+    return it.u === "bing" ? "https://cn.bing.com/search?q=" + encodeURIComponent(it.n + " 官网 下载") : it.u;
+  }
+  function favOf(it){ return favSet.has(it.id) || (it.t.indexOf("常用") >= 0 && !noFavSet.has(it.id)); }
+  function hue(s){ var h = 0; for(var i=0;i<s.length;i++) h = (h*31 + s.charCodeAt(i)) % 360; return h; }
+  function initial(it){
+    var n = (it.n||"").trim();
+    if(!n) return "#";
+    if(/[\u4e00-\u9fa5]/.test(n.charAt(0))) return n.charAt(0);
+    var h = hostOf(it).charAt(0); return (/[a-z]/i.test(h) ? h.toUpperCase() : n.charAt(0));
+  }
+
+  var $ = function(id){ return document.getElementById(id); };
+
+  /* ---------- nav ---------- */
+  var nav = $("nav");
+  function renderNav(){
+    var cnt = {}, favCnt = 0;
+    ALL.forEach(function(it){
+      if(hideSet.has(it.id)) return;
+      cnt[it.c] = (cnt[it.c]||0) + 1;
+      if(favOf(it)) favCnt++;
+    });
+    var html = CATS.map(function(c){
+      return '<a href="#sec-'+c.k+'" data-k="'+c.k+'"><span class="k">'+c.i+'</span><span class="g">'+c.n+'</span><span class="n">'+(cnt[c.k]||0)+'</span></a>';
+    }).join("");
+    html += '<a href="#sec-fav" data-k="__fav"><span class="k" style="background:#f7e2a8;color:#a4711a">★</span><span class="g">收藏与常用</span><span class="n">'+favCnt+'</span></a>';
+    nav.innerHTML = html;
+    var first = nav.querySelector("a"); if(first) first.classList.add("on");
+  }
+  nav.addEventListener("click", function(e){
+    var a = e.target.closest("a"); if(!a) return;
+    if(a.dataset.k === "__fav"){ e.preventDefault(); $("btnFav").click(); return; }
+    nav.querySelectorAll("a").forEach(function(x){ x.classList.remove("on"); });
+    a.classList.add("on");
+  });
+
+  /* ---------- tags ---------- */
+  var tagbox = $("tagbox");
+  function renderTags(){
+    var cnt = {};
+    ALL.forEach(function(it){
+      if(hideSet.has(it.id)) return;
+      it.t.forEach(function(t){ if(ALLTAGS.indexOf(t) >= 0) cnt[t] = (cnt[t]||0)+1; });
+    });
+    tagbox.innerHTML = ALLTAGS.filter(function(t){ return cnt[t]; })
+      .sort(function(a,b){ return cnt[b]-cnt[a]; })
+      .map(function(t){ return '<span class="tag'+(S.tags.indexOf(t)>=0?" on":"")+'" data-t="'+t+'">'+t+'<span class="n">'+cnt[t]+'</span></span>'; })
+      .join("");
+  }
+  tagbox.addEventListener("click", function(e){
+    var el = e.target.closest(".tag"); if(!el) return;
+    var t = el.dataset.t, i = S.tags.indexOf(t);
+    if(i >= 0) S.tags.splice(i,1); else S.tags.push(t);
+    renderTags(); renderMain();
+  });
+
+  /* ---------- filter ---------- */
+  var qEl = $("q"), sbox = $("sbox"), Q = "";
+  function match(it){
+    if(S.favOnly && !favOf(it)) return false;
+    if(S.tags.length && !S.tags.some(function(t){ return it.t.indexOf(t) >= 0; })) return false;
+    if(!Q) return true;
+    var hay = (it.n+" "+it.u+" "+it.t.join(" ")+" "+(CATMAP[it.c]?CATMAP[it.c].n:"")+" "+(it.d||"")).toLowerCase();
+    return Q.split(/\s+/).filter(Boolean).every(function(w){ return hay.indexOf(w.toLowerCase()) >= 0; });
+  }
+
+  /* ---------- card ---------- */
+  function card(it){
+    var f = favOf(it);
+    var tags = it.t.filter(function(t){ return t !== "常用"; }).slice(0,3);
+    return '<div class="card" data-id="'+it.id+'" style="--h:'+hue(hostOf(it))+'">'
+      + '<a class="cardlink" href="'+hrefOf(it)+'" target="_blank" rel="noopener" data-open="'+it.id+'">'
+      +   '<span class="ico">'+initial(it)+'</span>'
+      +   '<span class="ct"><span class="cn">'+it.n+'</span><span class="cu">'+hostOf(it)+'</span>'
+      +     (tags.length ? '<span class="ctags">'+tags.map(function(t){return '<i>'+t+'</i>';}).join("")+'</span>' : '')
+      +   '</span>'
+      + '</a>'
+      + (f ? '<span class="badge">★</span>' : '')
+      + '<div class="acts">'
+      +   '<button data-act="fav" class="'+(f?"faved":"")+'" title="'+(f?"取消收藏":"收藏")+'">★</button>'
+      +   '<button data-act="hide" title="隐藏到隐藏夹">◍</button>'
+      +   '<button data-act="copy" title="复制链接">⧉</button>'
+      + '</div></div>';
+  }
+  function sec(id, name, n, list, desc){
+    return '<section class="sec" id="'+id+'">'
+      + '<div class="sechd"><span class="bar"></span><h3'+(desc?' title="'+desc+'"':'')+'>'+name+'</h3>'
+      + '<span class="cnt">'+n+'</span>'
+      + '<div class="acts2"><button class="mini" data-openall="'+id+'">批量打开</button></div></div>'
+      + '<div class="grid">'+list.map(card).join("")+'</div></section>';
+  }
+
+  /* ---------- main ---------- */
+  var sections = $("sections"), favbar = $("favbar");
+  function renderFavBar(){
+    var favs = ALL.filter(function(it){ return !hideSet.has(it.id) && favOf(it); });
+    favbar.innerHTML = (favs.length && !S.favOnly)
+      ? '<span class="lb">★ 常用</span>' + favs.map(function(it){
+          return '<a href="'+hrefOf(it)+'" target="_blank" rel="noopener" data-open="'+it.id+'" title="'+hostOf(it)+'">'+it.n+'</a>';
+        }).join("")
+      : "";
+  }
+  function renderMain(){
+    var html = "";
+    var favs = ALL.filter(function(it){ return !hideSet.has(it.id) && favOf(it) && match(it); });
+    if(S.favOnly){
+      if(favs.length) html = sec("sec-fav", "★ 收藏与常用", favs.length, favs, "标注「常用」的站点默认在这里，可在卡片上取消");
+    } else {
+      CATS.forEach(function(c){
+        var list = (byCat[c.k]||[]).filter(function(it){ return !hideSet.has(it.id) && match(it); });
+        if(list.length) html += sec("sec-"+c.k, c.n, list.length, list, c.d);
+      });
+    }
+    if(!html) html = '<div class="empty"><b>∅</b>'
+      + (S.favOnly ? "还没有收藏 / 常用站点，把鼠标移到卡片上点 ★ 即可" : "没有匹配的站点，换个关键词或标签试试") + '</div>';
+    sections.innerHTML = html;
+    $("favN").textContent = ALL.filter(favOf).length;
+    renderFavBar(); renderFoot();
+    if(S.favOnly) syncNav("__fav");
+  }
+  function syncNav(k){
+    nav.querySelectorAll("a").forEach(function(a){ a.classList.toggle("on", a.dataset.k === k); });
+  }
+
+  /* ---------- foot ---------- */
+  function renderFoot(){
+    var n = ALL.filter(function(it){ return !hideSet.has(it.id); }).length;
+    $("foot").innerHTML = "站点 <b>"+n+"</b> / 全部 <b>"+ALL.length+"</b><br>"
+      + "收藏 <b>"+ALL.filter(favOf).length+"</b> · 隐藏 <b>"+hideSet.size+"</b> · 自定义 <b>"+S.custom.length+"</b><br>"
+      + '<button id="footReset">清空筛选</button>';
+    $("footReset").onclick = function(){
+      S.tags = []; S.favOnly = false; Q = ""; qEl.value = ""; sbox.classList.remove("hasval");
+      $("btnFav").classList.remove("on"); renderTags(); renderMain();
+      var f = nav.querySelector('a[data-k]:not([data-k="__fav"])'); if(f) syncNav(f.dataset.k);
+    };
+  }
+
+  /* ---------- recent ---------- */
+  var recbar = $("recbar");
+  function renderRec(){
+    var list = (S.recent||[]).map(function(id){
+      return ALL.filter(function(x){ return x.id === id; })[0];
+    }).filter(function(x){ return x && !hideSet.has(x.id); }).slice(0,7);
+    recbar.innerHTML = list.length
+      ? '<span class="lb">最近访问</span>' + list.map(function(it){
+          return '<a href="'+hrefOf(it)+'" target="_blank" rel="noopener" data-open="'+it.id+'">'+it.n+'</a>';
+        }).join("")
+      : "";
+  }
+  function track(id){
+    S.recent = [id].concat((S.recent||[]).filter(function(x){ return x !== id; })).slice(0,12);
+    save(); renderRec();
+  }
+
+  /* ---------- dock ---------- */
+  var panel = $("panel"), pList = $("pList"), hideN = $("hideN");
+  $("btnDock").addEventListener("click", function(e){
+    e.stopPropagation(); panel.classList.toggle("open"); renderDock();
+  });
+  document.addEventListener("click", function(e){
+    if(!e.target.closest(".dock")) panel.classList.remove("open");
+  });
+  function renderDock(){
+    var list = ALL.filter(function(it){ return hideSet.has(it.id); });
+    hideN.textContent = list.length;
+    hideN.style.display = list.length ? "grid" : "none";
+    pList.innerHTML = list.length ? list.map(function(it){
+      return '<div class="pit" data-id="'+it.id+'">'
+        + '<span class="ico" style="--h:'+hue(hostOf(it))+';width:22px;height:22px;font-size:10.5px;border-radius:6px">'+initial(it)+'</span>'
+        + '<span class="pn">'+it.n+'</span><button data-act="unhide">恢复</button></div>';
+    }).join("") : '<div class="pemp">隐藏夹是空的<br>卡片右下角「◍」可隐藏不常用的站点</div>';
+  }
+  $("restoreAll").addEventListener("click", function(){
+    hideSet.clear(); save(); renderNav(); renderTags(); renderMain(); renderDock(); renderRec();
+  });
+  pList.addEventListener("click", function(e){
+    var b = e.target.closest('[data-act="unhide"]'); if(!b) return;
+    hideSet.delete(b.closest(".pit").dataset.id);
+    save(); renderNav(); renderTags(); renderMain(); renderDock(); renderRec();
+  });
+
+  /* ---------- global click ---------- */
+  document.addEventListener("click", function(e){
+    var openall = e.target.closest("[data-openall]");
+    if(openall){
+      var links = [].slice.call(document.querySelectorAll("#"+openall.dataset.openall+" .cardlink"));
+      if(links.length && confirm("将打开该分组下 "+links.length+" 个链接，浏览器可能拦截多个弹窗。继续？")){
+        links.forEach(function(a){ window.open(a.href, "_blank"); });
+      }
+      return;
+    }
+    var opened = e.target.closest("[data-open]");
+    if(opened){ track(opened.dataset.open); return; }
+    var cardEl = e.target.closest(".card");
+    if(!cardEl) return;
+    var btn = e.target.closest("button[data-act]");
+    if(!btn) return;
+    e.preventDefault();
+    var it = ALL.filter(function(x){ return x.id === cardEl.dataset.id; })[0];
+    if(!it) return;
+    var act = btn.dataset.act;
+    if(act === "fav"){
+      if(favOf(it)){ favSet.delete(it.id); noFavSet.add(it.id); }
+      else { noFavSet.delete(it.id); favSet.add(it.id); }
+      save(); renderNav(); renderMain();
+    }
+    if(act === "hide"){
+      hideSet.add(it.id); save();
+      renderNav(); renderTags(); renderMain(); renderDock(); renderRec();
+      toast("已加入隐藏夹：" + it.n);
+    }
+    if(act === "copy"){
+      var txt = hrefOf(it);
+      if(navigator.clipboard) navigator.clipboard.writeText(txt).then(function(){ toast("已复制：" + txt); }, function(){ prompt("复制链接：", txt); });
+      else prompt("复制链接：", txt);
+    }
+  });
+
+  /* ---------- search ---------- */
+  qEl.addEventListener("input", function(){
+    Q = qEl.value.trim();
+    sbox.classList.toggle("hasval", !!Q);
+    renderMain();
+  });
+  $("clr").addEventListener("click", function(){
+    qEl.value = ""; Q = ""; sbox.classList.remove("hasval"); renderMain(); qEl.focus();
+  });
+  document.addEventListener("keydown", function(e){
+    if(e.key === "/" && document.activeElement !== qEl){ e.preventDefault(); qEl.focus(); return; }
+    if(e.key === "Escape"){
+      $("mask").classList.remove("open");
+      if(document.activeElement === qEl){ qEl.blur(); }
+      else if(Q){ qEl.value=""; Q=""; sbox.classList.remove("hasval"); renderMain(); }
+    }
+    if((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k"){ e.preventDefault(); qEl.focus(); qEl.select(); }
+  });
+
+  /* ---------- toolbar ---------- */
+  var btnFav = $("btnFav");
+  btnFav.addEventListener("click", function(){
+    S.favOnly = !S.favOnly;
+    btnFav.classList.toggle("on", S.favOnly);
+    renderMain();
+    if(!S.favOnly){
+      var f = nav.querySelector('a[data-k]:not([data-k="__fav"])');
+      if(f) syncNav(f.dataset.k);
+    }
+    window.scrollTo({top:0, behavior:"smooth"});
+  });
+  var btnEdit = $("btnEdit");
+  btnEdit.addEventListener("click", function(){
+    var on = document.body.classList.toggle("editing");
+    btnEdit.classList.toggle("on", on);
+    toast(on ? "管理模式：卡片右下角常显 ★收藏 / ◍隐藏 / ⧉复制" : "已退出管理模式");
+  });
+  var btnTheme = $("btnTheme");
+  function applyTheme(){
+    document.documentElement.dataset.theme = S.theme;
+    btnTheme.textContent = S.theme === "dark" ? "☀" : "☾";
+    btnTheme.title = S.theme === "dark" ? "切换为浅色" : "切换为深色";
+  }
+  btnTheme.addEventListener("click", function(){
+    S.theme = S.theme === "dark" ? "light" : "dark"; save(); applyTheme();
+  });
+  $("brand").addEventListener("click", function(e){ e.preventDefault(); window.scrollTo({top:0, behavior:"smooth"}); });
+
+  /* ---------- modal ---------- */
+  var mask = $("mask"), modal = $("modal");
+  function openModal(html){ modal.innerHTML = html; mask.classList.add("open"); }
+  mask.addEventListener("click", function(e){ if(e.target === mask) mask.classList.remove("open"); });
+
+  $("btnAdd").addEventListener("click", function(){
+    openModal('<h3>添加站点</h3>'
+      + '<div class="fld"><label>名称</label><input id="f-n" placeholder="例：NCBI BLAST"></div>'
+      + '<div class="fld"><label>网址（留空则生成搜索链接）</label><input id="f-u" placeholder="https://…"></div>'
+      + '<div class="fld"><label>分类</label><select id="f-c">'+CATS.map(function(c){return '<option value="'+c.k+'">'+c.n+'</option>';}).join("")+'</select></div>'
+      + '<div class="fld"><label>标签（逗号分隔）</label><input id="f-t" placeholder="中文,视频"></div>'
+      + '<div class="row"><button class="bt g" data-close>取消</button><button class="bt p" id="f-ok">保存</button></div>');
+    setTimeout(function(){ $("f-n").focus(); }, 30);
+  });
+  modal.addEventListener("click", function(e){
+    if(e.target.closest("[data-close]")){ mask.classList.remove("open"); return; }
+    if(e.target.id === "f-ok"){
+      var n = $("f-n").value.trim(), u = $("f-u").value.trim(),
+          c = $("f-c").value, t = $("f-t").value.split(/[,，\s]+/).filter(Boolean);
+      if(!n){ alert("请填写名称"); return; }
+      S.custom.push({n:n, u:(u || "bing"), c:c, t:t, d:"自定义"});
+      save(); location.reload();
+    }
+    if(e.target.id === "expBtn"){
+      var blob = new Blob([JSON.stringify(S, null, 2)], {type:"application/json"});
+      var a = document.createElement("a");
+      a.href = URL.createObjectURL(blob); a.download = "portal-config.json"; a.click();
+    }
+    if(e.target.id === "rstBtn"){
+      if(confirm("清空本机保存的收藏 / 隐藏 / 自定义站点？不可撤销。")){ localStorage.removeItem(KEY); location.reload(); }
+    }
+  });
+  $("btnHelp").addEventListener("click", function(){
+    openModal('<h3>使用说明</h3><div class="kbdhelp">'
+      + '<kbd>/</kbd> 或 <kbd>Ctrl</kbd>+<kbd>K</kbd> 聚焦搜索 · <kbd>Esc</kbd> 清空<br>'
+      + '卡片右下角：<b>★</b> 收藏 · <b>◍</b> 隐藏（进右下角隐藏夹）· <b>⧉</b> 复制链接<br>'
+      + '标注 <b>常用</b> 的站点默认出现在「收藏与常用」，取消收藏后会被记住。<br>'
+      + '「只看收藏」「标签筛选」「搜索」可叠加使用；分组标题右侧「批量打开」可一次开整组。<br>'
+      + '收藏 / 隐藏 / 自定义站点 / 主题都保存在本机浏览器，换电脑需重新设置（可导出配置）。<br>'
+      + '共收录 <b>' + ALL.length + '</b> 条，来源：WangLab-Resource.html + WangLab资源信息.xlsx。'
+      + '</div><div class="row"><button class="bt g" id="expBtn">导出配置</button>'
+      + '<button class="bt g" id="rstBtn">重置本机设置</button><button class="bt p" data-close>知道了</button></div>');
+  });
+
+  /* ---------- toast ---------- */
+  var toastEl;
+  function toast(msg){
+    if(!toastEl){
+      toastEl = document.createElement("div");
+      toastEl.style.cssText = "position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:#161d26;color:#fff;font-size:12.5px;padding:9px 18px;border-radius:20px;z-index:200;opacity:0;transition:.2s;pointer-events:none;max-width:80vw;text-align:center";
+      document.body.appendChild(toastEl);
+    }
+    toastEl.textContent = msg; toastEl.style.opacity = 1;
+    clearTimeout(toastEl._t);
+    toastEl._t = setTimeout(function(){ toastEl.style.opacity = 0; }, 1900);
+  }
+
+  /* ---------- scroll spy ---------- */
+  var ticking = false;
+  window.addEventListener("scroll", function(){
+    if(ticking) return;
+    ticking = true;
+    requestAnimationFrame(function(){
+      ticking = false;
+      var y = window.scrollY + 130, cur = null;
+      document.querySelectorAll("section.sec").forEach(function(s){ if(s.offsetTop <= y) cur = s.id; });
+      if(!cur) return;
+      nav.querySelectorAll("a").forEach(function(a){
+        var id = a.dataset.k === "__fav" ? "sec-fav" : "sec-" + a.dataset.k;
+        a.classList.toggle("on", id === cur);
+      });
+    });
+  }, {passive:true});
+
+  /* ---------- boot ---------- */
+  applyTheme();
+  renderNav(); renderTags(); renderMain(); renderDock(); renderRec();
+})();
+</script>
+</body>
+</html>
